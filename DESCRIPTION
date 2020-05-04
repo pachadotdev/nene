@@ -25,4 +25,6 @@ LazyData: true
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 Suggests: 
-    purrr
+    purrr,
+    readr,
+    writexl
