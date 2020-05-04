@@ -23,8 +23,7 @@ calculo_desempleo <- function(encuesta) {
         activ == 1 ~ "ocupados",
         activ == 2 ~ "desocupados",
         activ == 3 ~ "inactivos"
-      ),
-      region = as_factor(region)
+      )
     ) %>% 
     filter(activ2 != "inactivos")
   
