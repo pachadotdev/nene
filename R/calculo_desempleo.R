@@ -1,7 +1,7 @@
 #' Calculo desempleo
 #' @param encuesta string con la ruta a un archivo SPSS
 #' @importFrom survey svydesign svytable
-#' @importFrom dplyr select mutate filter case_when everything as_tibble
+#' @importFrom dplyr select mutate filter case_when rename everything as_tibble
 #' @importFrom haven read_sav as_factor
 #' @importFrom magrittr `%>%`
 #' @importFrom tidyr pivot_wider
@@ -10,7 +10,14 @@
 calculo_desempleo <- function(encuesta) {
   stopifnot(is.character(encuesta))
   
-  datos <- read_sav(encuesta) %>% 
+  datos <- read_sav(encuesta)
+  
+  if (any(c("id_directorio", "estrato") %in% colnames(datos))) {
+    datos <- datos %>% 
+      rename(conglomerado = id_directorio, estrato_unico = estrato)
+  }
+  
+  datos <- datos %>% 
     mutate(
       activ2 = case_when(
         activ == 1 ~ "ocupados",
@@ -24,13 +31,13 @@ calculo_desempleo <- function(encuesta) {
   # attr(datos$activ, 'label')
   # print_labels(datos$activ)
   
-  pesos <- svydesign(id = ~conglomerado, strata = ~estrato_unico, data = datos, weights = datos$fact_cal)
+  pesos <- svydesign(id = ~conglomerado, strata = ~estrato_unico, weights = ~fact_cal, data = datos)
   
   nivel_region <- svytable(~activ2+region, pesos) %>% as_tibble()
   
   desempleo <- nivel_region %>% 
     pivot_wider(names_from = "activ2", values_from = "n") %>% 
-    filter(!region %in% c("No sabe", "No responde")) %>% 
+    filter(desocupados > 0) %>% 
     adorn_totals() %>% 
     mutate(
       anio = unique(datos$ano_trimestre),
