@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+src/*.o
+src/*.so
+src/*.dll
+src/Makevars
+data-raw/*.zip
+data-raw/*.rar
+data-raw/*.sav
+tests/testthat/here
