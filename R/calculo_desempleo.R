@@ -12,7 +12,12 @@ calculo_desempleo <- function(encuesta) {
   
   datos <- read_sav(encuesta)
   
-  if (any(c("id_directorio", "estrato") %in% colnames(datos))) {
+  if ("id_directorio" %in% colnames(datos)) {
+    datos <- datos %>% 
+      rename(conglomerado = id_directorio)
+  }
+  
+  if ("estrato" %in% colnames(datos)) {
     datos <- datos %>% 
       rename(conglomerado = id_directorio, estrato_unico = estrato)
   }
